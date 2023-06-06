@@ -1,0 +1,18 @@
+terraform {
+  required_version = ">= 1.3"
+  required_providers {
+    aws = { version = "~> 3.4" }
+  }
+  # backend "s3" {
+  #   bucket         = "raven-tf-state-bucket"
+  #   dynamodb_table = "ravenc-tf-state-lock"
+  #   key            = "raven-tf-state"
+  #   encrypt        = true
+  #   profile        = "raven"
+  #   region         = "us-east-2"
+  # }
+}
+# provider "aws" {
+#   region  = "us-east-2"
+#   profile = "raven"
+# }
