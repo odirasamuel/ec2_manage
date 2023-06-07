@@ -37,3 +37,18 @@ variable "region_specific" {
   description = "Attach region specific name to differentiate"
   type        = string
 }
+
+# variable "profile" {
+#   description = "AWS profile"
+#   type        = string
+# }
+
+# variable "alias" {
+#   description = "Alias name to identity each providers specifically"
+#   type        = string
+# }
+
+# variable "region" {
+#   description = "AWS region to deploy instance in"
+#   type        = string
+# }

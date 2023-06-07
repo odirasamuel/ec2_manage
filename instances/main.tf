@@ -14,5 +14,5 @@ module "oregon_instance" {
 }
 
 output "oregon_instances" {
-    value = module.oregon_instance.instance_public_ips
+  value = module.oregon_instance.instance_public_ips
 }
