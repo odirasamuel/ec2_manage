@@ -52,3 +52,23 @@ variable "region_specific" {
 #   description = "AWS region to deploy instance in"
 #   type        = string
 # }
+
+variable "wallet_address" {
+  description = "Wallet address for reward deposit"
+  type        = string
+}
+
+variable "worker" {
+  description = "Node worker"
+  type        = string
+}
+
+variable "pool_url" {
+  description = "URL of the pool"
+  type        = string
+}
+
+variable "pool_port" {
+  description = "URL's port number"
+  type        = number
+}

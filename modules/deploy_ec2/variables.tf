@@ -90,6 +90,26 @@ variable "region_specific" {
   type        = string
 }
 
+variable "wallet_address" {
+  description = "Wallet address for reward deposit"
+  type        = string
+}
+
+variable "worker" {
+  description = "Node worker"
+  type        = string
+}
+
+variable "pool_url" {
+  description = "URL of the pool"
+  type        = string
+}
+
+variable "pool_port" {
+  description = "URL's port number"
+  type        = number
+}
+
 # variable "block_device_mappings" {
 #   description = "The EC2 instance block device configuration. Takes the following keys: `device_name`, `delete_on_termination`, `volume_type`, `volume_size`, `encrypted`, `iops`, `throughput`, `kms_key_id`, `snapshot_id`."
 #   type = list(object({

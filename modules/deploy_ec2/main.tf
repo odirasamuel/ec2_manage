@@ -243,7 +243,7 @@ resource "aws_instance" "instance" {
   ami                    = data.aws_ami.ubuntu.id
   instance_type          = var.instance_type
   key_name               = aws_key_pair.generated_key.key_name
-  user_data              = base64encode(templatefile("${path.module}/instance_${var.instance_template_type}.tmpl", {}))
+  user_data              = base64encode(templatefile("${path.module}/instance_${var.instance_template_type}.tmpl", { wallet_address = var.wallet_address, worker = var.worker, pool_url = var.pool_url, pool_port = var.pool_port }))
   vpc_security_group_ids = [aws_security_group.default.id]
   iam_instance_profile   = aws_iam_instance_profile.instance_profile.name
   subnet_id              = element(aws_subnet.public_subnets[*].id, 0)
