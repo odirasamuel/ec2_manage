@@ -8,9 +8,10 @@ module "oregon_instance" {
   instance_type          = var.instance_type
   instance_template_type = var.instance_template_type
   region_specific        = var.region_specific
-  providers = {
-    aws = aws.oregon
-  }
+  wallet_address         = var.wallet_address
+  worker                 = var.worker
+  pool_url               = var.pool_url
+  pool_port              = var.pool_port
 }
 
 output "oregon_instances" {
