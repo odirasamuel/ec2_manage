@@ -1,4 +1,4 @@
-module "oregon_instance" {
+module "instance" {
   source                 = "../modules/deploy_ec2"
   cidr_block             = var.cidr_block
   public_subnets_cidr    = var.public_subnets_cidr
@@ -14,6 +14,6 @@ module "oregon_instance" {
   pool_port              = var.pool_port
 }
 
-output "oregon_instances" {
-  value = module.oregon_instance.instance_public_ips
+output "instances" {
+  value = module.instance.instance_public_ips
 }
