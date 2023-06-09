@@ -38,20 +38,20 @@ variable "region_specific" {
   type        = string
 }
 
-variable "profile" {
-  description = "AWS profile"
-  type        = string
-}
+# variable "profile" {
+#   description = "AWS profile"
+#   type        = string
+# }
 
-variable "alias" {
-  description = "Alias name to identity each providers specifically"
-  type        = string
-}
+# variable "alias" {
+#   description = "Alias name to identity each providers specifically"
+#   type        = string
+# }
 
-variable "region" {
-  description = "AWS region to deploy instance in"
-  type        = string
-}
+# variable "region" {
+#   description = "AWS region to deploy instance in"
+#   type        = string
+# }
 
 variable "wallet_address" {
   description = "Wallet address for reward deposit"

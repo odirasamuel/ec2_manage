@@ -12,6 +12,12 @@ module "instance" {
   worker                 = var.worker
   pool_url               = var.pool_url
   pool_port              = var.pool_port
+  # profile                = var.profile
+  # alias                  = var.alias
+  # region                 = var.region
+  providers = {
+    aws = aws.oregon
+  }
 }
 
 output "instances" {
