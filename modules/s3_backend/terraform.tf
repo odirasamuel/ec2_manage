@@ -1,7 +1,7 @@
 terraform {
   required_version = ">= 1.3"
   required_providers {
-    aws = { version = "~> 3.4" }
+    aws = { version = "~> 4.9" }
   }
   # backend "s3" {
   #   bucket         = "raven-tf-state-bucket"

@@ -1,13 +1,9 @@
 #!/bin/bash
 _user=ubuntu
-sudo apt update
-sudo apt install software-properties-common
-sudo add-apt-repository --yes --update ppa:ansible/ansible
-sudo apt install ansible -y
-_wallet_address=“${wallet_address}”
-_worker=“${worker}”
-_pool_url=“${pool_url}”
-_pool_port=“${pool_port}”
+_wallet_address="${wallet_address}"
+_worker="${worker}"
+_pool_url="${pool_url}"
+_pool_port="${pool_port}"
 
 wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/cuda-ubuntu2004.pin
 sudo mv cuda-ubuntu2004.pin /etc/apt/preferences.d/cuda-repository-pin-600
@@ -24,14 +20,9 @@ mv file/cuda cuda
 sudo cp cuda/include/cudnn*.h /usr/local/cuda/include
 sudo cp cuda/lib64/libcudnn* /usr/local/cuda/lib64
 sudo chmod a+r /usr/local/cuda/include/cudnn*.h /usr/local/cuda/lib64/libcudnn*
-cuda=(
-  "export LD_LIBRARY_PATH='$LD_LIBRARY_PATH:/usr/local/cuda/lib64:/usr/local/cuda/extras/CUPTI/lib64'"
-  "export CUDA_HOME='/usr/local/cuda'"
-  "export PATH='/usr/local/cuda/bin:$PATH'"
-)
-for line in "${cuda[@]}"; do
-  echo "$line" >> ~/.bashrc
-done
+echo "export LD_LIBRARY_PATH='$LD_LIBRARY_PATH:/usr/local/cuda/lib64:/usr/local/cuda/extras/CUPTI/lib64'" >> ~/.bashrc
+echo "export CUDA_HOME='/usr/local/cuda'" >> ~/.bashrc
+echo "export PATH='/usr/local/cuda/bin:$PATH'" >> ~/.bashrc
 source ~/.bashrc
 sudo systemctl mask sleep.target suspend.target hibernate.target
 sudo apt-get update
@@ -40,26 +31,8 @@ wget -c https://github.com/RavenCommunity/kawpowminer/releases/download/1.2.4/ka
 wget -c https://github.com/RavenCommunity/kawpowminer/releases/download/1.2.4/kawpowminer-ubuntu20-cuda11-1.2.4.tar.gz.sha256sum
 wget -c https://github.com/RavenCommunity/kawpowminer/releases/download/1.2.4/kawpowminer-ubuntu20-opencl-1.2.4.tar.gz -O - | sudo tar -xz
 wget -c https://github.com/RavenCommunity/kawpowminer/releases/download/1.2.4/kawpowminer-ubuntu20-opencl-1.2.4.tar.gz.sha256sum
-components=(
-  "export WALLET_ADDRESS=$_wallet_address"
-  "export WORKER=$_worker"
-  "export POOL_URL=$_pool_url"
-  "export POOL_PORT=$_pool_port"
-)
-for line in "${components[@]}"; do
-  echo "$line" >> ~/.bashrc
-done
+echo "export WALLET_ADDRESS=$_wallet_address" >> ~/.bashrc
+echo "export WORKER=$_worker" >> ~/.bashrc
+echo "export POOL_URL=$_pool_url" >> ~/.bashrc
+echo "export POOL_PORT=$_pool_port" >> ~/.bashrc
 source ~/.bashrc
-echo "#!/bin/bash" | sudo tee /home/ubuntu/start.sh > /dev/null
-echo "cd linux-ubuntu20-cuda11-1.2.4" | sudo tee -a /home/ubuntu/start.sh > /dev/null
-echo "./kawpowminer -P stratum+tcp://$WALLET_ADDRESS.$WORKER@$POOL_URL:$POOL_PORT" | sudo tee -a /home/ubuntu/start.sh > /dev/null
-sudo chmod +x /home/ubuntu/start.sh
-echo "[Unit]" | sudo tee /etc/systemd/system/start.service > /dev/null
-echo "Description=run" | sudo tee -a /etc/systemd/system/start.service > /dev/null
-echo "[Service]" | sudo tee /etc/systemd/system/start.service > /dev/null
-echo "ExecStart=/home/ubuntu/start.sh" | sudo tee -a /etc/systemd/system/start.service > /dev/null
-echo "[Install]" | sudo tee /etc/systemd/system/start.service > /dev/null
-echo "WantedBy=multi-user.target" | sudo tee -a /etc/systemd/system/start.service > /dev/null
-sudo systemctl enable start.service
-sudo systemctl start start.service
-sudo reboot
