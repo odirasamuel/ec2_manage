@@ -15,3 +15,15 @@ provider "aws" {
   alias   = "oregon"
   profile = "raven"
 }
+
+provider "aws" {
+  region = "ca-central-1"
+  alias = "can"
+  profile = "raven"
+}
+
+provider "aws" {
+  region = "us-east-1"
+  alias = "vir"
+  profile = "raven"
+}
