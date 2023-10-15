@@ -75,6 +75,32 @@ variable "ingress_rules" {
   }]
 }
 
+variable "ingress_rules_windows" {
+  description = "List of ingress rules for the instances."
+  type = list(object({
+    cidr_blocks      = list(string)
+    ipv6_cidr_blocks = list(string)
+    prefix_list_ids  = list(string)
+    from_port        = number
+    protocol         = string
+    security_groups  = list(string)
+    self             = bool
+    to_port          = number
+    description      = string
+  }))
+  default = [{
+    cidr_blocks      = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = null
+    prefix_list_ids  = null
+    from_port        = 3389
+    protocol         = "tcp"
+    security_groups  = null
+    self             = null
+    to_port          = 3389
+    description      = "RDP"
+  }]
+}
+
 variable "instance_type" {
   description = "Type of instance to create"
   type        = string
@@ -108,6 +134,18 @@ variable "pool_url" {
 variable "pool_port" {
   description = "URL's port number"
   type        = number
+}
+
+variable "create_windows_instance" {
+  description = "Boolean variable to decide if the Windows instance should be created"
+  type        = bool
+  default     = false
+}
+
+variable "create_instance" {
+  description = "Boolean variable to decide if instance should be created"
+  type        = bool
+  default     = true
 }
 
 # variable "block_device_mappings" {

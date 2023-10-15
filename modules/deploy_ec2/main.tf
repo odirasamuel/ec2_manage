@@ -74,8 +74,8 @@ resource "aws_route_table_association" "public_rta" {
 }
 
 resource "aws_eip" "elastic_ips" {
-  count = local.elastic_ips_count
-  vpc   = true
+  count  = local.elastic_ips_count
+  domain = "vpc"
 
   tags = {
     Name        = "${local.vpc_name}-elastic-ip-${count.index + 1}"
@@ -166,6 +166,51 @@ resource "aws_security_group" "default" {
   }
 }
 
+resource "aws_security_group" "windows" {
+  name        = "${var.stack_name}-windows-sg"
+  description = "Default access to ${var.stack_name} ${terraform.workspace}"
+  vpc_id      = aws_vpc.vpc.id
+
+  dynamic "egress" {
+    for_each = var.egress_rules
+    iterator = each
+
+    content {
+      cidr_blocks      = each.value.cidr_blocks
+      ipv6_cidr_blocks = each.value.ipv6_cidr_blocks
+      prefix_list_ids  = each.value.prefix_list_ids
+      from_port        = each.value.from_port
+      protocol         = each.value.protocol
+      security_groups  = each.value.security_groups
+      self             = each.value.self
+      to_port          = each.value.to_port
+      description      = each.value.description
+    }
+  }
+
+  dynamic "ingress" {
+    for_each = var.ingress_rules_windows
+    iterator = each
+
+    content {
+      cidr_blocks      = each.value.cidr_blocks
+      ipv6_cidr_blocks = each.value.ipv6_cidr_blocks
+      prefix_list_ids  = each.value.prefix_list_ids
+      from_port        = each.value.from_port
+      protocol         = each.value.protocol
+      security_groups  = each.value.security_groups
+      self             = each.value.self
+      to_port          = each.value.to_port
+      description      = each.value.description
+    }
+  }
+
+  tags = {
+    "Name"        = "${var.stack_name}-windows-sg"
+    "Environment" = "${terraform.workspace}"
+  }
+}
+
 resource "aws_iam_role" "instance_role" {
   name = "${var.stack_name}-${var.region_specific}-role"
   path = "/"
@@ -239,11 +284,37 @@ data "aws_ami" "ubuntu" {
   }
 }
 
+data "aws_ami" "windows" {
+  most_recent = true
+  owners      = ["amazon"]
+
+  filter {
+    name   = "name"
+    values = ["Windows_Server-2022-English-Full-Base-*"]
+  }
+
+  filter {
+    name   = "root-device-type"
+    values = ["ebs"]
+  }
+
+  filter {
+    name   = "virtualization-type"
+    values = ["hvm"]
+  }
+
+  filter {
+    name   = "architecture"
+    values = ["x86_64"]
+  }
+}
+
 resource "aws_instance" "instance" {
+  count                  = var.create_instance ? 1 : 0
   ami                    = data.aws_ami.ubuntu.id
   instance_type          = var.instance_type
   key_name               = aws_key_pair.generated_key.key_name
-  user_data              = base64encode(templatefile("${path.module}/instance_${var.instance_template_type}.tmpl", { wallet_address = var.wallet_address, worker = var.worker, pool_url = var.pool_url, pool_port = var.pool_port }))
+  user_data              = base64encode(templatefile("${path.module}/instance_${var.instance_template_type}.sh", { wallet_address = var.wallet_address, worker = var.worker, pool_url = var.pool_url, pool_port = var.pool_port }))
   vpc_security_group_ids = [aws_security_group.default.id]
   iam_instance_profile   = aws_iam_instance_profile.instance_profile.name
   subnet_id              = element(aws_subnet.public_subnets[*].id, 0)
@@ -258,6 +329,30 @@ resource "aws_instance" "instance" {
   }
 }
 
+resource "aws_instance" "instance_windows" {
+  count                  = var.create_windows_instance ? 1 : 0
+  ami                    = data.aws_ami.windows.id
+  instance_type          = var.instance_type
+  key_name               = aws_key_pair.generated_key.key_name
+  user_data              = base64encode(templatefile("${path.module}/instance_${var.instance_template_type}.ps1", { wallet_address = var.wallet_address, worker = var.worker, pool_url = var.pool_url, pool_port = var.pool_port }))
+  vpc_security_group_ids = [aws_security_group.windows.id]
+  iam_instance_profile   = aws_iam_instance_profile.instance_profile.name
+  subnet_id              = element(aws_subnet.public_subnets[*].id, 0)
+  root_block_device {
+    volume_size = 100
+    volume_type = "gp2"
+  }
+
+  tags = {
+    Name        = "${var.stack_name}-windows-instance"
+    Environment = terraform.workspace
+  }
+}
+
 output "instance_public_ips" {
-  value = aws_instance.instance.public_ip[*]
+  value = var.create_instance ? aws_instance.instance[0].public_ip[*] : "Instance not created, IP not available"
+}
+
+output "windows_instance_public_ips" {
+  value = var.create_windows_instance ? aws_instance.instance_windows[0].public_ip[*] : "Instance not created, IP not available"
 }

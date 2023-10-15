@@ -72,3 +72,15 @@ variable "pool_port" {
   description = "URL's port number"
   type        = number
 }
+
+variable "create_windows_instance" {
+  description = "Boolean variable to decide if the Windows instance should be created"
+  type        = bool
+  default     = false
+}
+
+variable "create_instance" {
+  description = "Boolean variable to decide if instance should be created"
+  type        = bool
+  default     = true
+}
